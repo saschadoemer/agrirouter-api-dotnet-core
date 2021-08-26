@@ -17,16 +17,6 @@ namespace Agrirouter.Test.Data
             return Encode.ToMessageContent(allBytes);
         }
 
-        public static string ReadBase64EncodedSmallBmp()
-        {
-            var path = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
-                throw new InvalidOperationException(),
-                @"Data/Content/small_bmp.bmp");
-            var allBytes = File.ReadAllBytes(path);
-            return Encode.ToMessageContent(allBytes);
-        }
-
         public static string ReadBase64EncodedLargeBmp()
         {
             var path = Path.Combine(
@@ -53,6 +43,16 @@ namespace Agrirouter.Test.Data
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
                 throw new InvalidOperationException(),
                 @"Data/Content/large_shape.zip");
+            var allBytes = File.ReadAllBytes(path);
+            return Encode.ToMessageContent(allBytes);
+        }
+
+        public static string ReadBase64EncodedSmallTaskData()
+        {
+            var path = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
+                throw new InvalidOperationException(),
+                @"Data/Content/small_taskdata.zip");
             var allBytes = File.ReadAllBytes(path);
             return Encode.ToMessageContent(allBytes);
         }

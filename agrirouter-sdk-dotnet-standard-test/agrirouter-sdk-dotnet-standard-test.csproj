@@ -32,6 +32,9 @@
         <None Update="Data\Content\example.png">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="Data\Content\small_taskdata.zip">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
         <None Update="Data\Content\small_shape.zip">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
