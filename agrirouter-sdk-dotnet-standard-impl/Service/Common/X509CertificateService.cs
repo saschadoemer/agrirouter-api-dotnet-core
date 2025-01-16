@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Agrirouter.Api.Dto.Onboard;
+using Agrirouter.Api.Dto.Onboard.Inner;
 using Agrirouter.Api.Exception;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
@@ -16,26 +17,20 @@ namespace Agrirouter.Impl.Service.Common
     /// </summary>
     public class X509CertificateService
     {
-        /// <summary>
-        /// Create a certificate for the given onboarding response from the AR.
-        /// </summary>
-        /// <param name="onboardResponse">-</param>
-        /// <returns>A X509 certificate to use for the communication between endpoint and AR.</returns>
-        /// <exception cref="CouldNotCreateCertificateForTypeException">-</exception>
-        public static X509Certificate GetCertificate(OnboardResponse onboardResponse)
+        private static X509Certificate GetCertificate(Authentication authentication)
         {
-            switch (onboardResponse.Authentication.Type)
+            switch (authentication.Type)
             {
                 case "P12":
                     return new X509Certificate2(
-                        Convert.FromBase64String(onboardResponse.Authentication.Certificate),
-                        onboardResponse.Authentication.Secret,
+                        Convert.FromBase64String(authentication.Certificate),
+                        authentication.Secret,
                         X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
                 case "PEM":
                 {
                     var pemReader = new PemReader(
-                        new StringReader(onboardResponse.Authentication.Certificate),
-                        new PasswordFinder(onboardResponse.Authentication.Secret));
+                        new StringReader(authentication.Certificate),
+                        new PasswordFinder(authentication.Secret));
 
                     RSA privateKey;
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
@@ -69,7 +64,31 @@ namespace Agrirouter.Impl.Service.Common
             }
 
             throw new CouldNotCreateCertificateForTypeException(
-                $"Could not create a certificate for the type '${onboardResponse.Authentication.Type}'");
+                $"Could not create a certificate for the type '${authentication.Type}'");
+
+        }
+
+        /// <summary>
+        /// Create a certificate from the given router device from the AR.
+        /// </summary>
+        /// <param name="routerDevice">-</param>
+        /// <returns>An X509 certificate to use for the communication between endpoint and AR.</returns>
+        /// <exception cref="CouldNotCreateCertificateForTypeException">-</exception>
+
+        public static X509Certificate GetCertificate(RouterDevice routerDevice)
+        {
+            return GetCertificate(routerDevice.Authentication);
+        }
+
+        /// <summary>
+        /// Create a certificate from the given onboarding response from the AR.
+        /// </summary>
+        /// <param name="onboardResponse">-</param>
+        /// <returns>An X509 certificate to use for the communication between endpoint and AR.</returns>
+        /// <exception cref="CouldNotCreateCertificateForTypeException">-</exception>
+        public static X509Certificate GetCertificate(OnboardResponse onboardResponse)
+        {
+            return GetCertificate(onboardResponse.Authentication);
         }
         
         /// <summary>
